@@ -1,34 +1,41 @@
--- SigbinHub Spawner UI
+-- SigbinHub Spawner UI (Mobile Friendly Version)
 -- Backend powered by GardenSpawner (https://github.com/ataturk123/GardenSpawner)
 
 local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua"))()
 
-local allowedPets = {
-    "Dragonfly",
-    "Raccoon",
-    "Queen Bee",
-    "Disco Bee",
-    "Butterfly"
-}
+local allowedPets = { "Dragonfly", "Raccoon", "Queen Bee", "Disco Bee", "Butterfly" }
 
-local gui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
+local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+local gui = Instance.new("ScreenGui", playerGui)
 gui.Name = "SigbinHubSpawner"
 
-local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 400, 0, 500)
-frame.Position = UDim2.new(0.5, -200, 0.5, -250)
-frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-frame.Active = true
-frame.Draggable = true
+-- Toggle Button
+local toggleButton = Instance.new("TextButton", gui)
+toggleButton.Size = UDim2.new(0, 60, 0, 60)
+toggleButton.Position = UDim2.new(0, 20, 0, 20)
+toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+toggleButton.Text = "🦋"
+toggleButton.TextColor3 = Color3.new(1,1,1)
+toggleButton.Font = Enum.Font.SourceSansBold
+toggleButton.TextSize = 28
 
+-- Main Frame
+local frame = Instance.new("Frame", gui)
+frame.Size = UDim2.new(0.8, 0, 0.8, 0)
+frame.Position = UDim2.new(0.1, 0, 0.1, 0)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.Visible = false
+
+-- Title
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 50)
 title.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 title.Text = "🦋 SigbinHub Spawner"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.SourceSansBold
-title.TextSize = 24
+title.TextSize = 26
 
+-- Close Button
 local closeButton = Instance.new("TextButton", frame)
 closeButton.Size = UDim2.new(0, 40, 0, 40)
 closeButton.Position = UDim2.new(1, -45, 0, 5)
@@ -37,110 +44,122 @@ closeButton.Text = "X"
 closeButton.TextColor3 = Color3.new(1, 1, 1)
 closeButton.Font = Enum.Font.SourceSansBold
 closeButton.TextSize = 20
-closeButton.MouseButton1Click:Connect(function() gui:Destroy() end)
+closeButton.MouseButton1Click:Connect(function() frame.Visible = false end)
 
+toggleButton.MouseButton1Click:Connect(function()
+	frame.Visible = not frame.Visible
+end)
+
+-- Pet Selection
 local petLabel = Instance.new("TextLabel", frame)
-petLabel.Position = UDim2.new(0, 10, 0, 60)
+petLabel.Position = UDim2.new(0, 20, 0, 60)
 petLabel.Size = UDim2.new(0, 150, 0, 30)
 petLabel.Text = "Select Pet:"
 petLabel.TextColor3 = Color3.new(1, 1, 1)
 petLabel.BackgroundTransparency = 1
 
 local petDropdown = Instance.new("TextButton", frame)
-petDropdown.Position = UDim2.new(0, 10, 0, 100)
-petDropdown.Size = UDim2.new(0, 180, 0, 30)
+petDropdown.Position = UDim2.new(0, 20, 0, 100)
+petDropdown.Size = UDim2.new(0, 200, 0, 40)
 petDropdown.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
 petDropdown.TextColor3 = Color3.new(1, 1, 1)
 petDropdown.Font = Enum.Font.SourceSans
-petDropdown.TextSize = 18
+petDropdown.TextSize = 20
 petDropdown.Text = "Choose Pet"
 
 local selectedPet = nil
 
 petDropdown.MouseButton1Click:Connect(function()
-    for _,v in pairs(frame:GetChildren()) do
-        if v:IsA("Frame") and v.Name == "DropdownMenu" then v:Destroy() end
-    end
+	if gui:FindFirstChild("DropdownMenu") then
+		gui.DropdownMenu:Destroy()
+		return
+	end
 
-    local menu = Instance.new("Frame", frame)
-    menu.Name = "DropdownMenu"
-    menu.Position = petDropdown.Position + UDim2.new(0, 0, 0, 30)
-    menu.Size = UDim2.new(0, 180, 0, 150)
-    menu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    menu.ClipsDescendants = true
+	local menu = Instance.new("Frame", gui)
+	menu.Name = "DropdownMenu"
+	menu.Position = petDropdown.AbsolutePosition + Vector2.new(0, petDropdown.AbsoluteSize.Y)
+	menu.Size = UDim2.new(0, 200, 0, 150)
+	menu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+	menu.BorderSizePixel = 0
 
-    local scroll = Instance.new("ScrollingFrame", menu)
-    scroll.Size = UDim2.new(1, 0, 1, 0)
-    scroll.CanvasSize = UDim2.new(0, 0, 0, #allowedPets * 35)
-    scroll.ScrollBarThickness = 8
-    scroll.BackgroundTransparency = 1
+	local scroll = Instance.new("ScrollingFrame", menu)
+	scroll.Size = UDim2.new(1, 0, 1, 0)
+	scroll.CanvasSize = UDim2.new(0, 0, 0, #allowedPets * 40)
+	scroll.ScrollBarThickness = 6
+	scroll.BackgroundTransparency = 1
 
-    for i,pet in ipairs(allowedPets) do
-        local option = Instance.new("TextButton", scroll)
-        option.Size = UDim2.new(1, 0, 0, 30)
-        option.Position = UDim2.new(0, 0, 0, (i-1)*35)
-        option.Text = pet
-        option.TextColor3 = Color3.new(1,1,1)
-        option.BackgroundColor3 = Color3.fromRGB(80,80,80)
-        option.Font = Enum.Font.SourceSansBold
-        option.TextSize = 18
+	for i, pet in ipairs(allowedPets) do
+		local option = Instance.new("TextButton", scroll)
+		option.Size = UDim2.new(1, 0, 0, 40)
+		option.Position = UDim2.new(0, 0, 0, (i-1)*40)
+		option.Text = pet
+		option.TextColor3 = Color3.new(1,1,1)
+		option.BackgroundColor3 = Color3.fromRGB(80,80,80)
+		option.Font = Enum.Font.SourceSansBold
+		option.TextSize = 20
 
-        option.MouseButton1Click:Connect(function()
-            petDropdown.Text = pet
-            selectedPet = pet
-            menu:Destroy()
-        end)
-    end
+		option.MouseButton1Click:Connect(function()
+			petDropdown.Text = pet
+			selectedPet = pet
+			menu:Destroy()
+		end)
+	end
 end)
 
+-- KG
 local kgLabel = Instance.new("TextLabel", frame)
-kgLabel.Position = UDim2.new(0, 10, 0, 160)
+kgLabel.Position = UDim2.new(0, 20, 0, 160)
 kgLabel.Size = UDim2.new(0, 150, 0, 30)
 kgLabel.Text = "KG:"
 kgLabel.TextColor3 = Color3.new(1, 1, 1)
 kgLabel.BackgroundTransparency = 1
 
 local kgBox = Instance.new("TextBox", frame)
-kgBox.Position = UDim2.new(0, 10, 0, 190)
-kgBox.Size = UDim2.new(0, 100, 0, 30)
+kgBox.Position = UDim2.new(0, 20, 0, 200)
+kgBox.Size = UDim2.new(0, 100, 0, 40)
 kgBox.PlaceholderText = "Enter KG"
 kgBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
 kgBox.TextColor3 = Color3.new(0,0,0)
-kgBox.TextSize = 18
+kgBox.Font = Enum.Font.SourceSans
+kgBox.TextSize = 20
 
+-- Age
 local ageLabel = Instance.new("TextLabel", frame)
-ageLabel.Position = UDim2.new(0, 10, 0, 230)
+ageLabel.Position = UDim2.new(0, 20, 0, 260)
 ageLabel.Size = UDim2.new(0, 150, 0, 30)
 ageLabel.Text = "Age:"
 ageLabel.TextColor3 = Color3.new(1, 1, 1)
 ageLabel.BackgroundTransparency = 1
 
 local ageBox = Instance.new("TextBox", frame)
-ageBox.Position = UDim2.new(0, 10, 0, 260)
-ageBox.Size = UDim2.new(0, 100, 0, 30)
+ageBox.Position = UDim2.new(0, 20, 0, 300)
+ageBox.Size = UDim2.new(0, 100, 0, 40)
 ageBox.PlaceholderText = "Enter Age"
 ageBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
 ageBox.TextColor3 = Color3.new(0,0,0)
-ageBox.TextSize = 18
+ageBox.Font = Enum.Font.SourceSans
+ageBox.TextSize = 20
 
+-- Spawn Button
 local spawnPetButton = Instance.new("TextButton", frame)
-spawnPetButton.Position = UDim2.new(0, 10, 0, 310)
-spawnPetButton.Size = UDim2.new(0, 200, 0, 40)
+spawnPetButton.Position = UDim2.new(0, 20, 0, 360)
+spawnPetButton.Size = UDim2.new(0, 220, 0, 50)
 spawnPetButton.BackgroundColor3 = Color3.fromRGB(70, 180, 100)
 spawnPetButton.Text = "Spawn Pet"
 spawnPetButton.TextColor3 = Color3.new(1,1,1)
-spawnPetButton.TextSize = 20
+spawnPetButton.Font = Enum.Font.SourceSansBold
+spawnPetButton.TextSize = 22
 
 spawnPetButton.MouseButton1Click:Connect(function()
-	if selectedPet then
-		local kg = tonumber(kgBox.Text)
-		local age = tonumber(ageBox.Text)
-		if kg and age then
-			Spawner.SpawnPet(selectedPet, kg, age)
-		else
-			warn("Enter valid KG and Age numbers")
-		end
-	else
-		warn("No pet selected")
+	if not selectedPet then
+		warn("Please select a pet!")
+		return
 	end
+	local kg = tonumber(kgBox.Text)
+	local age = tonumber(ageBox.Text)
+	if not kg or not age then
+		warn("Enter valid numbers for KG and Age!")
+		return
+	end
+	Spawner.SpawnPet(selectedPet, kg, age)
 end)
