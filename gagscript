@@ -1,4 +1,4 @@
--- SigbinHub Spawner UI (Mobile Friendly Version)
+-- SigbinHub Spawner UI (Safe, Fully Working Minimize Version)
 -- Backend powered by GardenSpawner (https://github.com/ataturk123/GardenSpawner)
 
 local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua"))()
@@ -9,42 +9,75 @@ local playerGui = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 local gui = Instance.new("ScreenGui", playerGui)
 gui.Name = "SigbinHubSpawner"
 
--- Toggle Button
+-- Toggle Button (to open UI)
 local toggleButton = Instance.new("TextButton", gui)
-toggleButton.Size = UDim2.new(0, 60, 0, 60)
+toggleButton.Size = UDim2.new(0, 50, 0, 50)
 toggleButton.Position = UDim2.new(0, 20, 0, 20)
 toggleButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
 toggleButton.Text = "🦋"
 toggleButton.TextColor3 = Color3.new(1,1,1)
 toggleButton.Font = Enum.Font.SourceSansBold
-toggleButton.TextSize = 28
+toggleButton.TextSize = 24
 
 -- Main Frame
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0.8, 0, 0.8, 0)
-frame.Position = UDim2.new(0.1, 0, 0.1, 0)
+frame.Size = UDim2.new(0, 300, 0, 400)
+frame.Position = UDim2.new(0.5, -150, 0.5, -200)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.Visible = false
+frame.Active = true
+frame.Draggable = true
 
--- Title
+-- Title Bar
 local title = Instance.new("TextLabel", frame)
-title.Size = UDim2.new(1, 0, 0, 50)
+title.Size = UDim2.new(1, 0, 0, 40)
 title.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-title.Text = "🦋 SigbinHub Spawner"
+title.Text = "🦋 SigbinHub"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.SourceSansBold
-title.TextSize = 26
+title.TextSize = 22
 
 -- Close Button
 local closeButton = Instance.new("TextButton", frame)
-closeButton.Size = UDim2.new(0, 40, 0, 40)
-closeButton.Position = UDim2.new(1, -45, 0, 5)
+closeButton.Size = UDim2.new(0, 35, 0, 35)
+closeButton.Position = UDim2.new(1, -40, 0, 2)
 closeButton.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
 closeButton.Text = "X"
 closeButton.TextColor3 = Color3.new(1, 1, 1)
 closeButton.Font = Enum.Font.SourceSansBold
-closeButton.TextSize = 20
-closeButton.MouseButton1Click:Connect(function() frame.Visible = false end)
+closeButton.TextSize = 18
+closeButton.MouseButton1Click:Connect(function()
+	frame.Visible = false
+end)
+
+-- Minimize Button
+local minimizeButton = Instance.new("TextButton", frame)
+minimizeButton.Size = UDim2.new(0, 35, 0, 35)
+minimizeButton.Position = UDim2.new(1, -80, 0, 2)
+minimizeButton.BackgroundColor3 = Color3.fromRGB(60, 150, 200)
+minimizeButton.Text = "_"
+minimizeButton.TextColor3 = Color3.new(1, 1, 1)
+minimizeButton.Font = Enum.Font.SourceSansBold
+minimizeButton.TextSize = 18
+
+local minimized = false
+minimizeButton.MouseButton1Click:Connect(function()
+	if not minimized then
+		for _, child in pairs(frame:GetChildren()) do
+			if child ~= title and child ~= closeButton and child ~= minimizeButton then
+				child.Visible = false
+			end
+		end
+		frame.Size = UDim2.new(0, 300, 0, 45)
+		minimized = true
+	else
+		for _, child in pairs(frame:GetChildren()) do
+			child.Visible = true
+		end
+		frame.Size = UDim2.new(0, 300, 0, 400)
+		minimized = false
+	end
+end)
 
 toggleButton.MouseButton1Click:Connect(function()
 	frame.Visible = not frame.Visible
@@ -52,51 +85,54 @@ end)
 
 -- Pet Selection
 local petLabel = Instance.new("TextLabel", frame)
-petLabel.Position = UDim2.new(0, 20, 0, 60)
-petLabel.Size = UDim2.new(0, 150, 0, 30)
+petLabel.Position = UDim2.new(0, 10, 0, 50)
+petLabel.Size = UDim2.new(0, 100, 0, 25)
 petLabel.Text = "Select Pet:"
 petLabel.TextColor3 = Color3.new(1, 1, 1)
 petLabel.BackgroundTransparency = 1
+petLabel.Font = Enum.Font.SourceSans
+petLabel.TextSize = 18
 
 local petDropdown = Instance.new("TextButton", frame)
-petDropdown.Position = UDim2.new(0, 20, 0, 100)
-petDropdown.Size = UDim2.new(0, 200, 0, 40)
+petDropdown.Position = UDim2.new(0, 10, 0, 80)
+petDropdown.Size = UDim2.new(0, 180, 0, 30)
 petDropdown.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
 petDropdown.TextColor3 = Color3.new(1, 1, 1)
 petDropdown.Font = Enum.Font.SourceSans
-petDropdown.TextSize = 20
+petDropdown.TextSize = 18
 petDropdown.Text = "Choose Pet"
 
 local selectedPet = nil
 
 petDropdown.MouseButton1Click:Connect(function()
-	if gui:FindFirstChild("DropdownMenu") then
-		gui.DropdownMenu:Destroy()
+	-- destroy old dropdown if exist
+	if frame:FindFirstChild("DropdownMenu") then
+		frame.DropdownMenu:Destroy()
 		return
 	end
 
-	local menu = Instance.new("Frame", gui)
+	local menu = Instance.new("Frame", frame)
 	menu.Name = "DropdownMenu"
-	menu.Position = petDropdown.AbsolutePosition + Vector2.new(0, petDropdown.AbsoluteSize.Y)
-	menu.Size = UDim2.new(0, 200, 0, 150)
+	menu.Position = UDim2.new(0, 10, 0, 110)
+	menu.Size = UDim2.new(0, 180, 0, 120)
 	menu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
 	menu.BorderSizePixel = 0
 
 	local scroll = Instance.new("ScrollingFrame", menu)
 	scroll.Size = UDim2.new(1, 0, 1, 0)
-	scroll.CanvasSize = UDim2.new(0, 0, 0, #allowedPets * 40)
+	scroll.CanvasSize = UDim2.new(0, 0, 0, #allowedPets * 35)
 	scroll.ScrollBarThickness = 6
 	scroll.BackgroundTransparency = 1
 
 	for i, pet in ipairs(allowedPets) do
 		local option = Instance.new("TextButton", scroll)
-		option.Size = UDim2.new(1, 0, 0, 40)
-		option.Position = UDim2.new(0, 0, 0, (i-1)*40)
+		option.Size = UDim2.new(1, 0, 0, 30)
+		option.Position = UDim2.new(0, 0, 0, (i-1)*35)
 		option.Text = pet
 		option.TextColor3 = Color3.new(1,1,1)
 		option.BackgroundColor3 = Color3.fromRGB(80,80,80)
 		option.Font = Enum.Font.SourceSansBold
-		option.TextSize = 20
+		option.TextSize = 18
 
 		option.MouseButton1Click:Connect(function()
 			petDropdown.Text = pet
@@ -106,60 +142,11 @@ petDropdown.MouseButton1Click:Connect(function()
 	end
 end)
 
--- KG
+-- KG Input
 local kgLabel = Instance.new("TextLabel", frame)
-kgLabel.Position = UDim2.new(0, 20, 0, 160)
-kgLabel.Size = UDim2.new(0, 150, 0, 30)
+kgLabel.Position = UDim2.new(0, 10, 0, 150)
+kgLabel.Size = UDim2.new(0, 100, 0, 25)
 kgLabel.Text = "KG:"
 kgLabel.TextColor3 = Color3.new(1, 1, 1)
 kgLabel.BackgroundTransparency = 1
-
-local kgBox = Instance.new("TextBox", frame)
-kgBox.Position = UDim2.new(0, 20, 0, 200)
-kgBox.Size = UDim2.new(0, 100, 0, 40)
-kgBox.PlaceholderText = "Enter KG"
-kgBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
-kgBox.TextColor3 = Color3.new(0,0,0)
-kgBox.Font = Enum.Font.SourceSans
-kgBox.TextSize = 20
-
--- Age
-local ageLabel = Instance.new("TextLabel", frame)
-ageLabel.Position = UDim2.new(0, 20, 0, 260)
-ageLabel.Size = UDim2.new(0, 150, 0, 30)
-ageLabel.Text = "Age:"
-ageLabel.TextColor3 = Color3.new(1, 1, 1)
-ageLabel.BackgroundTransparency = 1
-
-local ageBox = Instance.new("TextBox", frame)
-ageBox.Position = UDim2.new(0, 20, 0, 300)
-ageBox.Size = UDim2.new(0, 100, 0, 40)
-ageBox.PlaceholderText = "Enter Age"
-ageBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
-ageBox.TextColor3 = Color3.new(0,0,0)
-ageBox.Font = Enum.Font.SourceSans
-ageBox.TextSize = 20
-
--- Spawn Button
-local spawnPetButton = Instance.new("TextButton", frame)
-spawnPetButton.Position = UDim2.new(0, 20, 0, 360)
-spawnPetButton.Size = UDim2.new(0, 220, 0, 50)
-spawnPetButton.BackgroundColor3 = Color3.fromRGB(70, 180, 100)
-spawnPetButton.Text = "Spawn Pet"
-spawnPetButton.TextColor3 = Color3.new(1,1,1)
-spawnPetButton.Font = Enum.Font.SourceSansBold
-spawnPetButton.TextSize = 22
-
-spawnPetButton.MouseButton1Click:Connect(function()
-	if not selectedPet then
-		warn("Please select a pet!")
-		return
-	end
-	local kg = tonumber(kgBox.Text)
-	local age = tonumber(ageBox.Text)
-	if not kg or not age then
-		warn("Enter valid numbers for KG and Age!")
-		return
-	end
-	Spawner.SpawnPet(selectedPet, kg, age)
-end)
+kgLabel.Font = Enum.Font.SourceSans
