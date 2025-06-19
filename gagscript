@@ -19,8 +19,8 @@ toggleButton.TextSize = 20
 
 -- Main Frame
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 260, 0, 280)
-frame.Position = UDim2.new(0.5, -130, 0.4, -140)
+frame.Size = UDim2.new(0, 260, 0, 320)
+frame.Position = UDim2.new(0.5, -130, 0.4, -160)
 frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
 frame.BorderSizePixel = 0
 frame.Visible = false
@@ -154,7 +154,7 @@ ageBox.TextSize = 16
 
 -- Spawn Pet Button
 local spawnPetButton = Instance.new("TextButton", frame)
-spawnPetButton.Position = UDim2.new(0, 10, 0, 260)
+spawnPetButton.Position = UDim2.new(0, 10, 0, 265)
 spawnPetButton.Size = UDim2.new(1, -20, 0, 30)
 spawnPetButton.BackgroundColor3 = Color3.fromRGB(70, 180, 100)
 spawnPetButton.Text = "Spawn Pet"
