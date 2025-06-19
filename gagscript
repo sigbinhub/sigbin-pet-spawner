@@ -19,7 +19,7 @@ toggleButton.TextSize = 24
 
 -- Main Frame
 local frame = Instance.new("Frame", gui)
-frame.Size = UDim2.new(0, 320, 0, 420)
+frame.Size = UDim2.new(0, 240, 0, 360)
 frame.Position = UDim2.new(0.5, -160, 0.5, -210)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.Visible = false
@@ -143,42 +143,50 @@ end)
 -- KG Label
 local kgLabel = Instance.new("TextLabel", frame)
 kgLabel.Position = UDim2.new(0, 10, 0, 280)
-kgLabel.Size = UDim2.new(0, 100, 0, 25)
-kgLabel.Text = "KG:"
+kgLabel.Size = UDim2.new(0, 300, 0, 40)
+kgLabel.Text = "weight\nkg"
 kgLabel.TextColor3 = Color3.new(1, 1, 1)
 kgLabel.BackgroundTransparency = 1
-kgLabel.Font = Enum.Font.SourceSans
-kgLabel.TextSize = 18
+kgLabel.Font = Enum.Font.SourceSansBold
+kgLabel.TextSize = 32
+kgLabel.TextWrapped = true
+kgLabel.TextYAlignment = Enum.TextYAlignment.Center
+kgLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 -- KG Input
 local kgBox = Instance.new("TextBox", frame)
-kgBox.Position = UDim2.new(0, 10, 0, 310)
-kgBox.Size = UDim2.new(0, 100, 0, 30)
+kgBox.Position = UDim2.new(0.5, -150, 0, 330)
+kgBox.Size = UDim2.new(0, 300, 0, 40)
 kgBox.PlaceholderText = "Enter KG"
 kgBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
 kgBox.TextColor3 = Color3.new(0,0,0)
 kgBox.Font = Enum.Font.SourceSans
-kgBox.TextSize = 18
+kgBox.TextSize = 22
+kgBox.TextXAlignment = Enum.TextXAlignment.Center
 
 -- Age Label
 local ageLabel = Instance.new("TextLabel", frame)
-ageLabel.Position = UDim2.new(0, 10, 0, 350)
-ageLabel.Size = UDim2.new(0, 100, 0, 25)
-ageLabel.Text = "Age:"
+ageLabel.Position = UDim2.new(0, 10, 0, 380)
+ageLabel.Size = UDim2.new(0, 300, 0, 40)
+ageLabel.Text = "age\nyears"
 ageLabel.TextColor3 = Color3.new(1, 1, 1)
 ageLabel.BackgroundTransparency = 1
-ageLabel.Font = Enum.Font.SourceSans
-ageLabel.TextSize = 18
+ageLabel.Font = Enum.Font.SourceSansBold
+ageLabel.TextSize = 32
+ageLabel.TextWrapped = true
+ageLabel.TextYAlignment = Enum.TextYAlignment.Center
+ageLabel.TextXAlignment = Enum.TextXAlignment.Center
 
 -- Age Input
 local ageBox = Instance.new("TextBox", frame)
-ageBox.Position = UDim2.new(0, 10, 0, 380)
-ageBox.Size = UDim2.new(0, 100, 0, 30)
+ageBox.Position = UDim2.new(0.5, -150, 0, 430)
+ageBox.Size = UDim2.new(0, 300, 0, 40)
 ageBox.PlaceholderText = "Enter Age"
 ageBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
 ageBox.TextColor3 = Color3.new(0,0,0)
 ageBox.Font = Enum.Font.SourceSans
-ageBox.TextSize = 18
+ageBox.TextSize = 22
+ageBox.TextXAlignment = Enum.TextXAlignment.Center
 
 -- Spawn Pet Button
 local spawnPetButton = Instance.new("TextButton", frame)
