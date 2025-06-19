@@ -1,12 +1,58 @@
--- SigbinHub Spawner - Mobile Friendly UI
-
 local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua"))()
 
 local allowedPets = {"Dragonfly", "Raccoon", "Queen Bee", "Disco Bee", "Butterfly"}
 
 local player = game.Players.LocalPlayer
+
+-- Loading Screen
+local loadingGui = Instance.new("ScreenGui", player.PlayerGui)
+loadingGui.Name = "SigbinHubLoading"
+loadingGui.IgnoreGuiInset = true
+
+local bg = Instance.new("Frame", loadingGui)
+bg.Size = UDim2.new(1, 0, 1, 0)
+bg.BackgroundColor3 = Color3.new(0, 0, 0)
+
+local title = Instance.new("TextLabel", bg)
+title.Size = UDim2.new(1, 0, 0.2, 0)
+title.Position = UDim2.new(0, 0, 0.4, 0)
+title.BackgroundTransparency = 1
+title.Text = "SigbinHub"
+title.TextColor3 = Color3.new(1, 1, 1)
+title.Font = Enum.Font.GothamBold
+title.TextScaled = true
+
+local spinner = Instance.new("ImageLabel", bg)
+spinner.Size = UDim2.new(0, 100, 0, 100)
+spinner.Position = UDim2.new(0.5, -50, 0.65, 0)
+spinner.BackgroundTransparency = 1
+spinner.Image = "rbxassetid://11376002992"
+
+local RunService = game:GetService("RunService")
+local rotation = 0
+local connection = RunService.RenderStepped:Connect(function(dt)
+    rotation = rotation + dt * 150
+    spinner.Rotation = rotation
+end)
+
+task.delay(3, function()
+    connection:Disconnect()
+    for i = 1, 20 do
+        bg.BackgroundTransparency = i/20
+        title.TextTransparency = i/20
+        spinner.ImageTransparency = i/20
+        wait(0.05)
+    end
+    loadingGui:Destroy()
+end)
+
+-- Wait loading finish before opening UI
+wait(3.5)
+
+-- MAIN UI STARTS
 local gui = Instance.new("ScreenGui", player.PlayerGui)
 gui.Name = "SigbinHubSpawner"
+gui.ResetOnSpawn = false
 
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0.8, 0, 0.8, 0)
@@ -14,8 +60,9 @@ frame.Position = UDim2.new(0.1, 0, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.Active = true
 frame.Draggable = true
+frame.ZIndex = 1
 
--- Background Image
+-- Background Image (replace with your asset ID)
 local background = Instance.new("ImageLabel", frame)
 background.Size = UDim2.new(1, 0, 1, 0)
 background.Position = UDim2.new(0, 0, 0, 0)
@@ -24,7 +71,6 @@ background.BackgroundTransparency = 1
 background.ImageTransparency = 0.3
 background.ZIndex = 0
 
--- Title
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0.1, 0)
 title.Position = UDim2.new(0, 0, 0, 0)
@@ -33,9 +79,29 @@ title.Text = "🦋 SigbinHub Spawner"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.SourceSansBold
 title.TextScaled = true
-title.ZIndex = 1
+title.ZIndex = 2
 
--- Pet Selection
+local minimizeBtn = Instance.new("TextButton", frame)
+minimizeBtn.Size = UDim2.new(0, 50, 0, 50)
+minimizeBtn.Position = UDim2.new(1, -55, 0, 5)
+minimizeBtn.BackgroundColor3 = Color3.fromRGB(200, 60, 60)
+minimizeBtn.Text = "-"
+minimizeBtn.TextColor3 = Color3.new(1, 1, 1)
+minimizeBtn.Font = Enum.Font.SourceSansBold
+minimizeBtn.TextScaled = true
+minimizeBtn.ZIndex = 3
+
+local minimized = false
+minimizeBtn.MouseButton1Click:Connect(function()
+    minimized = not minimized
+    for _,v in ipairs(frame:GetChildren()) do
+        if v ~= minimizeBtn and v ~= title and v ~= background then
+            v.Visible = not minimized
+        end
+    end
+    minimizeBtn.Text = minimized and "+" or "-"
+end)
+
 local petLabel = Instance.new("TextLabel", frame)
 petLabel.Position = UDim2.new(0.05, 0, 0.15, 0)
 petLabel.Size = UDim2.new(0.4, 0, 0.07, 0)
@@ -44,7 +110,7 @@ petLabel.TextColor3 = Color3.new(1, 1, 1)
 petLabel.BackgroundTransparency = 1
 petLabel.Font = Enum.Font.SourceSansBold
 petLabel.TextScaled = true
-petLabel.ZIndex = 1
+petLabel.ZIndex = 2
 
 local petDropdown = Instance.new("TextButton", frame)
 petDropdown.Position = UDim2.new(0.05, 0, 0.23, 0)
@@ -54,7 +120,7 @@ petDropdown.TextColor3 = Color3.new(1, 1, 1)
 petDropdown.Font = Enum.Font.SourceSans
 petDropdown.TextScaled = true
 petDropdown.Text = "Choose Pet"
-petDropdown.ZIndex = 1
+petDropdown.ZIndex = 2
 
 local selectedPet = nil
 
@@ -69,13 +135,14 @@ petDropdown.MouseButton1Click:Connect(function()
     menu.Size = UDim2.new(0.9, 0, 0.3, 0)
     menu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
     menu.ClipsDescendants = true
-    menu.ZIndex = 10
+    menu.ZIndex = 100
 
     local scroll = Instance.new("ScrollingFrame", menu)
     scroll.Size = UDim2.new(1, 0, 1, 0)
     scroll.CanvasSize = UDim2.new(0, 0, 0, #allowedPets * 60)
     scroll.ScrollBarThickness = 8
     scroll.BackgroundTransparency = 1
+    scroll.ZIndex = 101
 
     for i,pet in ipairs(allowedPets) do
         local option = Instance.new("TextButton", scroll)
@@ -86,6 +153,7 @@ petDropdown.MouseButton1Click:Connect(function()
         option.BackgroundColor3 = Color3.fromRGB(80,80,80)
         option.Font = Enum.Font.SourceSansBold
         option.TextScaled = true
+        option.ZIndex = 102
 
         option.MouseButton1Click:Connect(function()
             petDropdown.Text = pet
@@ -95,7 +163,6 @@ petDropdown.MouseButton1Click:Connect(function()
     end
 end)
 
--- KG input
 local kgBox = Instance.new("TextBox", frame)
 kgBox.Position = UDim2.new(0.05, 0, 0.55, 0)
 kgBox.Size = UDim2.new(0.4, 0, 0.07, 0)
@@ -104,9 +171,8 @@ kgBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
 kgBox.TextColor3 = Color3.new(0,0,0)
 kgBox.Font = Enum.Font.SourceSans
 kgBox.TextScaled = true
-kgBox.ZIndex = 1
+kgBox.ZIndex = 2
 
--- Age input
 local ageBox = Instance.new("TextBox", frame)
 ageBox.Position = UDim2.new(0.55, 0, 0.55, 0)
 ageBox.Size = UDim2.new(0.4, 0, 0.07, 0)
@@ -115,9 +181,8 @@ ageBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
 ageBox.TextColor3 = Color3.new(0,0,0)
 ageBox.Font = Enum.Font.SourceSans
 ageBox.TextScaled = true
-ageBox.ZIndex = 1
+ageBox.ZIndex = 2
 
--- Spawn Button
 local spawnPetButton = Instance.new("TextButton", frame)
 spawnPetButton.Position = UDim2.new(0.05, 0, 0.65, 0)
 spawnPetButton.Size = UDim2.new(0.9, 0, 0.1, 0)
@@ -126,7 +191,7 @@ spawnPetButton.Text = "Spawn Pet"
 spawnPetButton.TextColor3 = Color3.new(1,1,1)
 spawnPetButton.Font = Enum.Font.SourceSansBold
 spawnPetButton.TextScaled = true
-spawnPetButton.ZIndex = 1
+spawnPetButton.ZIndex = 2
 
 spawnPetButton.MouseButton1Click:Connect(function()
 	if selectedPet then
