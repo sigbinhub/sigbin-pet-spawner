@@ -1,11 +1,9 @@
 local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua"))()
-
 local allowedPets = {"Dragonfly", "Raccoon", "Queen Bee", "Disco Bee", "Butterfly"}
-
 local player = game.Players.LocalPlayer
 
--- Loading Screen
-local loadingGui = Instance.new("ScreenGui", player.PlayerGui)
+-- FULL LOADING SCREEN
+local loadingGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 loadingGui.Name = "SigbinHubLoading"
 loadingGui.IgnoreGuiInset = true
 
@@ -35,7 +33,9 @@ local connection = RunService.RenderStepped:Connect(function(dt)
     spinner.Rotation = rotation
 end)
 
-task.delay(3, function()
+-- Use full coroutine to not freeze executor
+coroutine.wrap(function()
+    wait(3)
     connection:Disconnect()
     for i = 1, 20 do
         bg.BackgroundTransparency = i/20
@@ -44,13 +44,10 @@ task.delay(3, function()
         wait(0.05)
     end
     loadingGui:Destroy()
-end)
+end)()
 
--- Wait loading finish before opening UI
-wait(3.5)
-
--- MAIN UI STARTS
-local gui = Instance.new("ScreenGui", player.PlayerGui)
+-- MAIN UI
+local gui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
 gui.Name = "SigbinHubSpawner"
 gui.ResetOnSpawn = false
 
@@ -60,12 +57,10 @@ frame.Position = UDim2.new(0.1, 0, 0.1, 0)
 frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
 frame.Active = true
 frame.Draggable = true
-frame.ZIndex = 1
 
--- Background Image (replace with your asset ID)
+-- Background image always stays
 local background = Instance.new("ImageLabel", frame)
 background.Size = UDim2.new(1, 0, 1, 0)
-background.Position = UDim2.new(0, 0, 0, 0)
 background.Image = "rbxassetid://PUT_YOUR_ASSET_ID_HERE"
 background.BackgroundTransparency = 1
 background.ImageTransparency = 0.3
@@ -91,17 +86,14 @@ minimizeBtn.Font = Enum.Font.SourceSansBold
 minimizeBtn.TextScaled = true
 minimizeBtn.ZIndex = 3
 
-local minimized = false
-minimizeBtn.MouseButton1Click:Connect(function()
-    minimized = not minimized
-    for _,v in ipairs(frame:GetChildren()) do
-        if v ~= minimizeBtn and v ~= title and v ~= background then
-            v.Visible = not minimized
-        end
-    end
-    minimizeBtn.Text = minimized and "+" or "-"
-end)
+local content = {}
 
+-- Create function to add UI components for easier hiding later:
+local function addContent(element)
+    table.insert(content, element)
+end
+
+-- Pet Label
 local petLabel = Instance.new("TextLabel", frame)
 petLabel.Position = UDim2.new(0.05, 0, 0.15, 0)
 petLabel.Size = UDim2.new(0.4, 0, 0.07, 0)
@@ -111,6 +103,7 @@ petLabel.BackgroundTransparency = 1
 petLabel.Font = Enum.Font.SourceSansBold
 petLabel.TextScaled = true
 petLabel.ZIndex = 2
+addContent(petLabel)
 
 local petDropdown = Instance.new("TextButton", frame)
 petDropdown.Position = UDim2.new(0.05, 0, 0.23, 0)
@@ -121,6 +114,7 @@ petDropdown.Font = Enum.Font.SourceSans
 petDropdown.TextScaled = true
 petDropdown.Text = "Choose Pet"
 petDropdown.ZIndex = 2
+addContent(petDropdown)
 
 local selectedPet = nil
 
@@ -134,8 +128,8 @@ petDropdown.MouseButton1Click:Connect(function()
     menu.Position = petDropdown.Position + UDim2.new(0, 0, 0.08, 0)
     menu.Size = UDim2.new(0.9, 0, 0.3, 0)
     menu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    menu.ClipsDescendants = true
     menu.ZIndex = 100
+    menu.ClipsDescendants = true
 
     local scroll = Instance.new("ScrollingFrame", menu)
     scroll.Size = UDim2.new(1, 0, 1, 0)
@@ -172,6 +166,7 @@ kgBox.TextColor3 = Color3.new(0,0,0)
 kgBox.Font = Enum.Font.SourceSans
 kgBox.TextScaled = true
 kgBox.ZIndex = 2
+addContent(kgBox)
 
 local ageBox = Instance.new("TextBox", frame)
 ageBox.Position = UDim2.new(0.55, 0, 0.55, 0)
@@ -182,6 +177,7 @@ ageBox.TextColor3 = Color3.new(0,0,0)
 ageBox.Font = Enum.Font.SourceSans
 ageBox.TextScaled = true
 ageBox.ZIndex = 2
+addContent(ageBox)
 
 local spawnPetButton = Instance.new("TextButton", frame)
 spawnPetButton.Position = UDim2.new(0.05, 0, 0.65, 0)
@@ -192,6 +188,7 @@ spawnPetButton.TextColor3 = Color3.new(1,1,1)
 spawnPetButton.Font = Enum.Font.SourceSansBold
 spawnPetButton.TextScaled = true
 spawnPetButton.ZIndex = 2
+addContent(spawnPetButton)
 
 spawnPetButton.MouseButton1Click:Connect(function()
 	if selectedPet then
@@ -205,4 +202,12 @@ spawnPetButton.MouseButton1Click:Connect(function()
 	else
 		warn("No pet selected")
 	end
+end)
+
+-- Minimize button toggle
+minimizeBtn.MouseButton1Click:Connect(function()
+	for _, v in pairs(content) do
+		v.Visible = not v.Visible
+	end
+	minimizeBtn.Text = content[1].Visible and "-" or "+"
 end)
