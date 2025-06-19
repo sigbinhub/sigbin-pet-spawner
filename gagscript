@@ -1,10 +1,18 @@
--- Garden Spawner Pro UI by You
+-- SigbinHub Spawner UI
 -- Backend powered by GardenSpawner (https://github.com/ataturk123/GardenSpawner)
 
 local Spawner = loadstring(game:HttpGet("https://raw.githubusercontent.com/ataturk123/GardenSpawner/refs/heads/main/Spawner.lua"))()
 
+local allowedPets = {
+    "Dragonfly",
+    "Raccoon",
+    "Queen Bee",
+    "Disco Bee",
+    "Butterfly"
+}
+
 local gui = Instance.new("ScreenGui", game.Players.LocalPlayer.PlayerGui)
-gui.Name = "GardenSpawnerUI"
+gui.Name = "SigbinHubSpawner"
 
 local frame = Instance.new("Frame", gui)
 frame.Size = UDim2.new(0, 400, 0, 500)
@@ -16,7 +24,7 @@ frame.Draggable = true
 local title = Instance.new("TextLabel", frame)
 title.Size = UDim2.new(1, 0, 0, 50)
 title.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
-title.Text = "🌿 Garden Spawner PRO UI"
+title.Text = "🦋 SigbinHub Spawner"
 title.TextColor3 = Color3.new(1, 1, 1)
 title.Font = Enum.Font.SourceSansBold
 title.TextSize = 24
@@ -53,38 +61,47 @@ petDropdown.MouseButton1Click:Connect(function()
     for _,v in pairs(frame:GetChildren()) do
         if v:IsA("Frame") and v.Name == "DropdownMenu" then v:Destroy() end
     end
-	local pets = Spawner.GetPets()
-	local menu = Instance.new("Frame", frame)
-	menu.Name = "DropdownMenu"
-	menu.Position = petDropdown.Position + UDim2.new(0, 0, 0, 30)
-	menu.Size = UDim2.new(0, 180, 0, #pets*30)
-	menu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-	
-	for i,pet in ipairs(pets) do
-		local option = Instance.new("TextButton", menu)
-		option.Size = UDim2.new(1, 0, 0, 30)
-		option.Position = UDim2.new(0, 0, 0, (i-1)*30)
-		option.Text = pet
-		option.TextColor3 = Color3.new(1,1,1)
-		option.BackgroundColor3 = Color3.fromRGB(80,80,80)
-		
-		option.MouseButton1Click:Connect(function()
-			petDropdown.Text = pet
-			selectedPet = pet
-			menu:Destroy()
-		end)
-	end
+
+    local menu = Instance.new("Frame", frame)
+    menu.Name = "DropdownMenu"
+    menu.Position = petDropdown.Position + UDim2.new(0, 0, 0, 30)
+    menu.Size = UDim2.new(0, 180, 0, 150)
+    menu.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    menu.ClipsDescendants = true
+
+    local scroll = Instance.new("ScrollingFrame", menu)
+    scroll.Size = UDim2.new(1, 0, 1, 0)
+    scroll.CanvasSize = UDim2.new(0, 0, 0, #allowedPets * 35)
+    scroll.ScrollBarThickness = 8
+    scroll.BackgroundTransparency = 1
+
+    for i,pet in ipairs(allowedPets) do
+        local option = Instance.new("TextButton", scroll)
+        option.Size = UDim2.new(1, 0, 0, 30)
+        option.Position = UDim2.new(0, 0, 0, (i-1)*35)
+        option.Text = pet
+        option.TextColor3 = Color3.new(1,1,1)
+        option.BackgroundColor3 = Color3.fromRGB(80,80,80)
+        option.Font = Enum.Font.SourceSansBold
+        option.TextSize = 18
+
+        option.MouseButton1Click:Connect(function()
+            petDropdown.Text = pet
+            selectedPet = pet
+            menu:Destroy()
+        end)
+    end
 end)
 
 local kgLabel = Instance.new("TextLabel", frame)
-kgLabel.Position = UDim2.new(0, 10, 0, 150)
+kgLabel.Position = UDim2.new(0, 10, 0, 160)
 kgLabel.Size = UDim2.new(0, 150, 0, 30)
 kgLabel.Text = "KG:"
 kgLabel.TextColor3 = Color3.new(1, 1, 1)
 kgLabel.BackgroundTransparency = 1
 
 local kgBox = Instance.new("TextBox", frame)
-kgBox.Position = UDim2.new(0, 10, 0, 180)
+kgBox.Position = UDim2.new(0, 10, 0, 190)
 kgBox.Size = UDim2.new(0, 100, 0, 30)
 kgBox.PlaceholderText = "Enter KG"
 kgBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
@@ -92,14 +109,14 @@ kgBox.TextColor3 = Color3.new(0,0,0)
 kgBox.TextSize = 18
 
 local ageLabel = Instance.new("TextLabel", frame)
-ageLabel.Position = UDim2.new(0, 10, 0, 220)
+ageLabel.Position = UDim2.new(0, 10, 0, 230)
 ageLabel.Size = UDim2.new(0, 150, 0, 30)
 ageLabel.Text = "Age:"
 ageLabel.TextColor3 = Color3.new(1, 1, 1)
 ageLabel.BackgroundTransparency = 1
 
 local ageBox = Instance.new("TextBox", frame)
-ageBox.Position = UDim2.new(0, 10, 0, 250)
+ageBox.Position = UDim2.new(0, 10, 0, 260)
 ageBox.Size = UDim2.new(0, 100, 0, 30)
 ageBox.PlaceholderText = "Enter Age"
 ageBox.BackgroundColor3 = Color3.fromRGB(255,255,255)
@@ -107,7 +124,7 @@ ageBox.TextColor3 = Color3.new(0,0,0)
 ageBox.TextSize = 18
 
 local spawnPetButton = Instance.new("TextButton", frame)
-spawnPetButton.Position = UDim2.new(0, 10, 0, 300)
+spawnPetButton.Position = UDim2.new(0, 10, 0, 310)
 spawnPetButton.Size = UDim2.new(0, 200, 0, 40)
 spawnPetButton.BackgroundColor3 = Color3.fromRGB(70, 180, 100)
 spawnPetButton.Text = "Spawn Pet"
@@ -126,28 +143,4 @@ spawnPetButton.MouseButton1Click:Connect(function()
 	else
 		warn("No pet selected")
 	end
-end)
-
-local seedButton = Instance.new("TextButton", frame)
-seedButton.Position = UDim2.new(0, 10, 0, 360)
-seedButton.Size = UDim2.new(0, 200, 0, 40)
-seedButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
-seedButton.Text = "Spawn Candy Blossom"
-seedButton.TextColor3 = Color3.new(1,1,1)
-seedButton.TextSize = 20
-
-seedButton.MouseButton1Click:Connect(function()
-	Spawner.SpawnSeed("Candy Blossom")
-end)
-
-local eggButton = Instance.new("TextButton", frame)
-eggButton.Position = UDim2.new(0, 10, 0, 420)
-eggButton.Size = UDim2.new(0, 200, 0, 40)
-eggButton.BackgroundColor3 = Color3.fromRGB(130, 70, 180)
-eggButton.Text = "Spawn Night Egg"
-eggButton.TextColor3 = Color3.new(1,1,1)
-eggButton.TextSize = 20
-
-eggButton.MouseButton1Click:Connect(function()
-	Spawner.SpawnEgg("Night Egg")
 end)
